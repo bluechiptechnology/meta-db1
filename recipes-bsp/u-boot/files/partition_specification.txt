@@ -1,0 +1,6 @@
+sbl1:sbl1.bin:1024:dea0ba2c-cbdd-4805-b4f9-f428251c3e98
+rpm:rpm.bin:1024:098df793-d712-413d-9d4e-89d711772228
+tz:tz.bin:2048:a053aa7f-40b8-4b1c-ba08-2f68ac71a4f4
+hyp:hyp.bin:1024:e1a6a689-0c8d-4cc6-b4e8-55a4320fbd8a
+sec:sec.bin:32:303e6ac3-af15-4c54-9e9b-d9a8fbecf401
+aboot:u-boot-test-signed.mbn:2048:400ffdcd-22e0-47e7-9a23-f16ed9382388

@@ -1,0 +1,15 @@
+[Unit]
+Description=RMTFS setup
+After=systemd-remount-fs.service qrtr.service
+Requires=qrtr.service
+
+[Service]
+ExecStart=/bin/sh -c "LD_LIBRARY_PATH=/usr/local/lib /usr/local/bin/rmtfs -v"
+ExecStartPost=/bin/sh -c "[ -d /sys/bus/platform/devices/*.hexagon ] && modprobe qcom_q6v5_pil"
+
+Restart=always
+RestartSec=4
+
+[Install]
+WantedBy=multi-user.target
+
