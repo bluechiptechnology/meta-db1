@@ -1,0 +1,89 @@
+#!/bin/bash
+
+if [ "$EUID" -ne 0 ]; then
+	echo "Please run as superuser."
+	exit 1
+fi
+
+case $2 in
+	in)
+		OP=in
+		;;
+	out)
+		OP=out
+		;;
+esac
+
+if [ "$1" = "" ] || [ "$2" = "" ] || [ "$OP" = "" ] ; then
+	echo "usage: egpioconf <ext_pin_nr> <in|out> [<0|1>]"
+	echo "example:"
+	echo "egpioconf 3 out 1"
+	echo "  configures the external gpio pin 3 for output and sets its value high"
+	echo ""
+	echo "egpiocong 4 in"
+	echo "  configures the external gpio pin 4 for input"
+	exit 1
+fi
+
+
+P=`. egpiomap $1 p`
+D=`. egpiomap $1 d`
+
+# sanity check: the physical gpio must be set
+if [ "$P" = "?" ]; then
+	echo "Error: unknown gpio! $1"
+	exit 1
+fi
+
+# ensure physical gpios are exported
+if [ ! -d /sys/class/gpio/gpio$P ]; then
+	echo $P > /sys/class/gpio/export
+fi
+
+# export direction GPIO (may not be required)
+if [ "$D" != "?" ]; then
+	if [ ! -d /sys/class/gpio/gpio$D ]; then
+		echo $D > /sys/class/gpio/export
+	fi
+
+	#the direction of the 'direction' port is always out
+	echo out > /sys/class/gpio/gpio$D/direction
+fi
+
+
+# input: set the GPIO first, then the direction of level shifter 
+if [ $OP = "in" ]; then
+	#set direction of the physical gpio
+	echo in > /sys/class/gpio/gpio$P/direction
+	
+	if [ "$D" != "?" ]; then
+		#B -> A : low
+		echo 0 > /sys/class/gpio/gpio$D/value
+	fi
+
+# output: set the direction of the level shifter first, then the GPIO
+else
+
+	if [ "$D" != "?" ]; then
+		# A -> B: high
+		echo 1 > /sys/class/gpio/gpio$D/value
+	fi
+
+	#set the output direction of the physical gpio
+	echo out > /sys/class/gpio/gpio$P/direction
+
+	#set the output value
+	case "$3" in 
+	0)
+		echo 0 > /sys/class/gpio/gpio$P/value
+		;;
+	1)
+		echo 1 > /sys/class/gpio/gpio$P/value
+		;;
+	*)
+		echo "error: unsupported output value: $3"
+		exit 1
+		;;
+	esac
+fi
+

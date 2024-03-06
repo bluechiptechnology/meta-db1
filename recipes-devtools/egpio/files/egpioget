@@ -1,0 +1,38 @@
+#!/bin/bash
+
+if [ "$EUID" -ne 0 ]; then
+	echo "Please run as superuser."
+	exit 1
+fi
+
+
+if [ "$1" = "" ] ; then
+	echo "usage: egpioget <ext_pin_nr>"
+	echo "example:"
+	echo "egpioset  3"
+	echo "  gets the value of external gpio 3"
+	echo ""
+	echo "note: the external gpio must be configured"
+	echo "      via egpioconf tool"
+	exit 1
+fi
+
+
+P=`. egpiomap $1 p`
+D=`. egpiomap $1 d`
+
+# ensure physical gpios are exported
+if [ ! -d /sys/class/gpio/gpio$P ]; then
+	echo "error: external gpio is not configured. Use egpioconf tool."
+	exit 1
+fi
+
+# direction GPIO is not compulsory
+if [ "$D" != "?" ]; then
+	if [ ! -d /sys/class/gpio/gpio$D ]; then
+		echo "error: external gpio is not configured. Use egpioconf tool."
+		exit 1
+	fi
+fi
+
+cat /sys/class/gpio/gpio$P/value

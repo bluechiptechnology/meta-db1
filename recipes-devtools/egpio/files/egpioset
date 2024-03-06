@@ -1,0 +1,48 @@
+#!/bin/bash
+
+if [ "$EUID" -ne 0 ]; then
+	echo "Please run as superuser."
+	exit 1
+fi
+
+
+if [ "$1" = "" ] || [ "$2" = "" ] ; then
+	echo "usage: egpioset <ext_pin_nr> <0|1>"
+	echo "example:"
+	echo "egpioset  3 1"
+	echo "  sets the value of external gpio 3 as high"
+	echo ""
+	echo "egpiocong 4 0"
+	echo "  sets the value of external gpio 4 as low"
+	echo ""
+	echo "note: the external gpio must be configured for output"
+	echo "      via egpioconf tool"
+	exit 1
+fi
+
+
+P=`. egpiomap $1 p`
+D=`. egpiomap $1 d`
+
+# ensure physical gpios are exported
+if [ ! -d /sys/class/gpio/gpio$P ]; then
+	echo "error: external gpio is not configured. Use egpioconf tool."
+	exit 1
+fi
+
+if [ "$D" != "?" ]; then
+	if [ ! -d /sys/class/gpio/gpio$D ]; then
+		echo "error: external gpio is not configured. Use egpioconf tool."
+		exit 1
+	fi
+fi
+
+if [ "$2" == "0" ] || [ "$2" == "1" ]; then
+#	echo "outputing $2 to physical gpio $P"
+	echo $2 > /sys/class/gpio/gpio$P/value
+#	echo "the value is now:"
+#	cat /sys/class/gpio/gpio$P/value
+else
+	echo "error: unsupported output value: $2"
+	exit 1
+fi

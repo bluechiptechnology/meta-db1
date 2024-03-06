@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# parameters are optional
+# 1st parameter: the external gpio
+# 2nd parameter: 'p' to print physical gpio or 'd' to print direction gpio
+#                or will print both if the 2nd parameter is not specified
+# Example:
+# egpiomap 3
+#     prints the physical and directional gpio numbers of external port gpio 3
+#
+# egpiomap 4 p
+#     prints the physical gpio number of external port gpio 4
+#
+# egpiomap 4 d
+#     prints the directional gpio number of external port gpio 4
+
+if [ "$1" = "" ]; then
+	echo "External gpio pin mapping"
+	echo "external gpio,  physical gpio, direction gpio"
+	echo "---------------------------------------------"
+	echo "GPIO1            69            70"
+	echo "GPIO2           107            49"
+	echo "GPIO3           108            50"
+	echo "GPIO4           109            51"
+	echo "GPIO5           110            52"
+	echo "GPIO6           111            53"
+	echo "GPIO7           112            54"
+	echo "GPIO8           113            55"
+	echo "GPIO9           114            56"
+	echo "GPIO10          115            57"
+	echo "GPIO11          117            58"
+	echo "GPIO12          118            59"
+else
+	case $1 in
+	1)
+		P=69; D=70
+		;;
+	2)
+		P=107; D=49
+		;;
+	3)
+		P=108; D=50
+		;;
+	4)
+		P=109; D=51
+		;;
+	5)
+		P=110; D=52
+		;;
+	6)
+		P=111; D=53
+		;;
+	7)
+		P=112; D=54
+		;;
+	8)
+		P=113; D=55
+		;;
+	9)
+		P=114; D=56
+		;;
+	10)
+		P=115; D=57
+		;;
+	11)
+		P=117; D=58
+		;;
+	12)
+		P=118; D=59
+		;;
+	*)
+		P=?; D=?
+		;;
+	esac
+
+	case $2 in
+	p)
+		echo $P
+		;;
+	d)
+		echo $D
+		;;
+	*)
+		echo "$P $D"
+		;;
+	esac
+
+fi
