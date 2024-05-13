@@ -16,12 +16,13 @@ FILES:${PN} += "${systemd_unitdir}/system/qrtr.service \
                 /usr/local/bin/qrtr-cfg \
                 /usr/local/bin/qrtr-ns \
                 /usr/local/bin/rmtfs \
-                /usr/local/lib/libqrtr.so.1.0 \
                 /usr/local/lib/libqrtr.so \
                 /usr/local/lib/libqrtr.so.1 \
+                /usr/local/lib/libqrtr.so.1.0 \
                 /boot/modem_*"
 
-INSANE_SKIP:${PN} += "already-stripped file-rdeps"
+INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
+INSANE_SKIP:${PN} += "dev-so libdir ldflags already-stripped file-rdeps"
 
 do_install:append() {
     install -d ${D}/${systemd_unitdir}/system
@@ -35,8 +36,8 @@ do_install:append() {
 
     install -d ${D}/usr/local/lib
     install -m 0755 ${WORKDIR}/lib/libqrtr.so.1.0 ${D}/usr/local/lib/
-    install -m 0755 ${WORKDIR}/lib/libqrtr.so ${D}/usr/local/lib/
-    install -m 0755 ${WORKDIR}/lib/libqrtr.so.1 ${D}/usr/local/lib/
+    ln -s libqrtr.so.1.0 ${D}/usr/local/lib/libqrtr.so
+    ln -s libqrtr.so.1.0 ${D}/usr/local/lib/libqrtr.so.1
 
     install -d ${D}/boot
     install -m 0644 ${WORKDIR}/boot/modem_fs1 ${D}/boot
